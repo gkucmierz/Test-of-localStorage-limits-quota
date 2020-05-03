@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Test of localStorage limits/quota</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body>
+
+  <h1>Test of localStorage limits/quota</h1>
+
+  <p>
+    <button class="test">Test now!</button>
+  </p>
+  <p>
+    <button class="lower">check(…)</button>
+  </p>
+  <p>
+    <button class="upper">check(…)</button>
+  </p>
+
+  <textarea class="log" rows="20" cols="60"></textarea>
+
+<script>
+
+const check = bytes => {
+  try {
+    localStorage.clear();
+    localStorage.setItem('a', '0'.repeat(bytes));
+    localStorage.clear();
+    return true;
+  } catch(e) {
+    localStorage.clear();
+    return false;
+  }
+};
+
+const checkLog = bytes => {
+  const res = check(bytes)
+  log(`testing bytes: ${bytes} -> ${res}`);
+  return res;
+};
+
+const log = str => {
+  document.querySelector('.log').innerHTML += `${str}\n`;
+};
+
+const testLocalStorage = callback => {
+  let bytes = 1;
+  while (1) {
+    if (checkLog(bytes)) {
+      bytes *= 2;
+    } else {
+      break;
+    }
+  }
+  
+  let [lower, upper] = [bytes / 2, bytes];
+  while (1 < upper - lower) {
+    const mid = Math.floor((lower + upper) / 2);
+    if (checkLog(mid)) {
+      lower = mid;
+    } else {
+      upper = mid;
+    }
+  }
+
+  document.querySelector('.lower').innerHTML = `check(${lower})`;
+  document.querySelector('.upper').innerHTML = `check(${upper})`;
+  document.querySelector('.lower').addEventListener('click', () => checkLog(lower));
+  document.querySelector('.upper').addEventListener('click', () => checkLog(upper));
+};
+
+document.querySelector('.test').addEventListener('click', () => {
+  testLocalStorage(result => {
+
+  });
+});
+
+</script>
+
+</body>
+</html>
