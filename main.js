@@ -1,5 +1,4 @@
 
-
 const check = bytes => {
   try {
     localStorage.clear();
@@ -14,8 +13,12 @@ const check = bytes => {
 
 const checkLog = bytes => {
   const res = check(bytes)
-  log(`testing bytes: ${bytes} -> ${res}`);
+  formatLog(bytes, res);
   return res;
+};
+
+const formatLog = (bytes, res) => {
+  log(`testing bytes: ${bytes} -> ${res}`);
 };
 
 const log = str => {
@@ -24,10 +27,25 @@ const log = str => {
   textarea.scrollTop = textarea.scrollHeight;
 };
 
-const testLocalStorage = callback => {
+const asyncConsumeIterator = (iter, progressFn, doneFn = _ => _) => {
+  const loop = () => {
+    const {value, done} = iter.next();
+    if (done) {
+      doneFn();
+    } else {
+      progressFn(value);
+      setTimeout(loop, 0);
+    }
+  };
+  loop();
+};
+
+const testLocalStorage = function*() {
   let bytes = 1;
   while (1) {
-    if (checkLog(bytes)) {
+    const res = check(bytes);
+    yield {bytes, res};
+    if (res) {
       bytes *= 2;
     } else {
       break;
@@ -37,7 +55,9 @@ const testLocalStorage = callback => {
   let [lower, upper] = [bytes / 2, bytes];
   while (1 < upper - lower) {
     const mid = Math.floor((lower + upper) / 2);
-    if (checkLog(mid)) {
+    const res = check(mid);
+    yield {bytes: mid, res};
+    if (res) {
       lower = mid;
     } else {
       upper = mid;
@@ -51,7 +71,9 @@ const testLocalStorage = callback => {
 };
 
 document.querySelector('.test').addEventListener('click', () => {
-  testLocalStorage(result => {
-
-  });
+  asyncConsumeIterator(
+    testLocalStorage(),
+    ({bytes, res}) => formatLog(bytes, res),
+    () => log('done')
+  );
 });
