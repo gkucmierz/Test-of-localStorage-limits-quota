@@ -4,10 +4,10 @@ Test of localStorage limits/quota using bisection algorithm
 I wrote this simple code that is testing localStorage size in bytes.
 
 ```js
-const check = bytes => {
+const check = words => {
   try {
     localStorage.clear();
-    localStorage.setItem('a', '0'.repeat(bytes));
+    localStorage.setItem('a', '0'.repeat(words));
     localStorage.clear();
     return true;
   } catch(e) {
