@@ -1,4 +1,6 @@
 
+const events = {};
+
 const check = words => {
   try {
     localStorage.clear();
@@ -65,10 +67,18 @@ const testLocalStorage = function*() {
     }
   }
 
-  document.querySelector('.lower').innerHTML = `check(${lower})`;
-  document.querySelector('.upper').innerHTML = `check(${upper})`;
-  document.querySelector('.lower').addEventListener('click', () => checkLog(lower));
-  document.querySelector('.upper').addEventListener('click', () => checkLog(upper));
+  const btns = {
+    lower: document.querySelector('.lower'),
+    upper: document.querySelector('.upper')
+  };
+  btns.lower.innerHTML = `check(${lower})`;
+  btns.upper.innerHTML = `check(${upper})`;
+  btns.lower.removeEventListener('click', events.lower);
+  btns.upper.removeEventListener('click', events.upper);
+  events.lower = () => checkLog(lower);
+  events.upper = () => checkLog(upper);
+  btns.lower.addEventListener('click', events.lower);
+  btns.upper.addEventListener('click', events.upper);
 };
 
 document.querySelector('.test').addEventListener('click', () => {
