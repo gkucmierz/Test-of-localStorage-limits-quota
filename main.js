@@ -1,8 +1,8 @@
 
-const check = bytes => {
+const check = words => {
   try {
     localStorage.clear();
-    localStorage.setItem('a', '0'.repeat(bytes));
+    localStorage.setItem('a', '0'.repeat(words));
     localStorage.clear();
     return true;
   } catch(e) {
@@ -11,14 +11,15 @@ const check = bytes => {
   }
 };
 
-const checkLog = bytes => {
-  const res = check(bytes)
-  formatLog(bytes, res);
+const checkLog = words => {
+  const res = check(words)
+  formatLog(words, res);
   return res;
 };
 
-const formatLog = (bytes, res) => {
-  log(`testing bytes: ${bytes} -> ${res}`);
+const formatLog = (words, res) => {
+  const bytes = words * 2;
+  log(`words: ${words} bytes: ${bytes} -> ${res}`);
 };
 
 const log = str => {
